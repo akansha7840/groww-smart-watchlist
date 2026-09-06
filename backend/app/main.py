@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.config import settings
 from app.database import engine, Base, SessionLocal
 from app.models import StockCatalog, User
@@ -19,13 +22,13 @@ app = FastAPI(
 # Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows local Vite/React and deployed frontend domains
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Register Routers
+# Register API Routers
 app.include_router(watchlist_router)
 app.include_router(market_router)
 app.include_router(diff_router)
@@ -34,38 +37,63 @@ app.include_router(simulation_router)
 @app.on_event("startup")
 def on_startup():
     """Create all MySQL tables and seed the initial stock catalog."""
-    # 1. Create database schema
-    Base.metadata.create_all(bind=engine)
-
-    # 2. Seed stock catalog and default demo user
-    db = SessionLocal()
     try:
-        catalog_count = db.query(StockCatalog).count()
-        if catalog_count == 0:
-            for sym, data in NIFTY_CATALOG.items():
-                stock = StockCatalog(
-                    symbol=sym,
-                    name=data["name"],
-                    sector=data["sector"],
-                    market_cap="Large Cap",
-                    is_nifty50=True
-                )
-                db.add(stock)
-            db.commit()
+        # 1. Create database schema
+        Base.metadata.create_all(bind=engine)
 
-        # Ensure default user and initial watchlist exist
-        get_or_create_default_user(db)
-    finally:
-        db.close()
+        # 2. Seed stock catalog and default demo user
+        db = SessionLocal()
+        try:
+            catalog_count = db.query(StockCatalog).count()
+            if catalog_count == 0:
+                for sym, data in NIFTY_CATALOG.items():
+                    stock = StockCatalog(
+                        symbol=sym,
+                        name=data["name"],
+                        sector=data["sector"],
+                        market_cap="Large Cap",
+                        is_nifty50=True
+                    )
+                    db.add(stock)
+                db.commit()
+
+            # Ensure default user and initial watchlist exist
+            get_or_create_default_user(db)
+        finally:
+            db.close()
+    except Exception as e:
+        print("Startup database initialization note:", e)
 
 @app.get("/api/health", tags=["Health"])
 def health_check():
     return {
         "status": "healthy",
         "service": "Chronos Smart Watchlist Backend",
-        "engine": "FastAPI + MySQL 8.0",
+        "engine": "FastAPI + MySQL",
         "version": "1.0.0"
     }
+
+# Mount Frontend Static Assets for Single-URL Deployed Production
+base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+frontend_dist = os.path.join(base_dir, "frontend", "dist")
+
+if os.path.exists(frontend_dist):
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        # Don't hijack API routes or docs
+        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
+            raise HTTPException(status_code=404, detail="Not Found")
+        
+        file_path = os.path.join(frontend_dist, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        
+        # Fallback to SPA index.html
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
 
 if __name__ == "__main__":
     import uvicorn

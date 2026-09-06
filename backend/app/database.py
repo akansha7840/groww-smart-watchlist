@@ -1,14 +1,21 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.config import settings
 
-# Create SQLAlchemy engine with connection pool settings for MySQL
+db_url = settings.DATABASE_URL
+
+# For SQLite fallback if MySQL is not available in ephemeral test environments
+connect_args = {}
+if db_url.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+
+# Create SQLAlchemy engine with resilient connection pooling
 engine = create_engine(
-    settings.DATABASE_URL,
-    pool_pre_ping=True,      # Automatically reconnects if connection was dropped
-    pool_recycle=3600,       # Recycles connections every hour to avoid MySQL timeout
-    pool_size=10,
-    max_overflow=20
+    db_url,
+    pool_pre_ping=True,      # Automatically reconnects if connection dropped
+    pool_recycle=1800,       # Recycles connection every 30 mins
+    connect_args=connect_args
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
