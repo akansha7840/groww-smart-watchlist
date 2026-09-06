@@ -79,7 +79,7 @@ Stocks are dynamically categorized into:
 
 ---
 
-## 🎛️ The Judge Sandbox & Chaos Drawer
+##  The Judge Sandbox & Chaos Drawer
 During the 5-minute live demo, judges can test all edge cases directly on screen:
 * **Time-Travel Scrubber:** Drag the slider from 0 to 4 hours ago to watch the Diff Engine dynamically recalculate what changed in that exact duration.
 * **Simulate Stale Feed:** Demonstrates graceful degradation when data lag occurs.
