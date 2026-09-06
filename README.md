@@ -5,7 +5,7 @@
 
 ---
 
-## 🌟 The Problem We Are Solving
+##  The Problem We Are Solving
 
 Most market watchlists act like passive price boards:
 * They anchor changes to an arbitrary fixed point (yesterday's 4:00 PM closing price).
@@ -63,7 +63,7 @@ Stocks are dynamically categorized into:
 
 ---
 
-## 🛡️ Edge Cases & Resilience Engineering
+##  Edge Cases & Resilience Engineering
 
 | Edge Case | How Chronos Handles It |
 |---|---|
@@ -83,7 +83,7 @@ During the 5-minute live demo, judges can test all edge cases directly on screen
 
 ---
 
-## 🚀 Quick Setup & Run Instructions
+##  Quick Setup & Run Instructions
 
 ### Prerequisites
 * **Python 3.10+** (tested on Python 3.14)
@@ -120,7 +120,7 @@ npm run dev
 
 ---
 
-## 🧪 Automated Testing
+##  Automated Testing
 Run the backend test suite verifying noise rejection, volume anomalies, and milestone flags:
 ```bash
 cd backend
@@ -129,7 +129,7 @@ cd backend
 
 ---
 
-## 🏆 Defense Dossier: Why These Technical Choices?
+##  Defense Dossier: Why These Technical Choices?
 
 * **Why Python (FastAPI) for Backend?**
   Python is the industry gold standard for quantitative modeling, statistical analysis, and algorithmic trading. FastAPI provides high-performance asynchronous request handling, native Server-Sent Events (SSE), and auto-generated Swagger documentation.
