@@ -129,13 +129,4 @@ cd backend
 
 ---
 
-##  Defense Dossier: Why These Technical Choices?
 
-* **Why Python (FastAPI) for Backend?**
-  Python is the industry gold standard for quantitative modeling, statistical analysis, and algorithmic trading. FastAPI provides high-performance asynchronous request handling, native Server-Sent Events (SSE), and auto-generated Swagger documentation.
-* **Why MySQL with SQLAlchemy?**
-  A watchlist is inherently relational (Users $\rightarrow$ Watchlists $\rightarrow$ Items $\rightarrow$ Checkpoints). Foreign key constraints and cascading deletes maintain relational integrity. SQLAlchemy abstracts queries and provides easy migration portability.
-* **Why Server-Sent Events (SSE) over WebSockets?**
-  Market data is unidirectional (server-to-client). SSE runs over standard HTTP/2, supports native browser reconnections with `Last-Event-ID`, traverses corporate firewalls, and eliminates the stateful handshake overhead of WebSockets.
-* **Why an In-Memory TTL Cache?**
-  Protects against third-party API rate limits and absorbs burst traffic from multiple users tracking overlapping Nifty 50 tickers.
