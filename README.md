@@ -1,6 +1,10 @@
 # Chronos — Context-Aware Smart Market Watchlist
 ### Built for Groww CODE 2026 Engineering Challenge
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available%20Online-00D09C?style=for-the-badge&logo=render&logoColor=white)](https://groww-smart-watchlist-nu8h.onrender.com/)
+
+**🌐 Working Application URL:** [https://groww-smart-watchlist-nu8h.onrender.com/](https://groww-smart-watchlist-nu8h.onrender.com/)
+
 > **"Traditional watchlists show what changed from yesterday's close. Chronos tells you what meaningfully changed since *you* were away, why it happened, and what demands your attention right now."**
 
 ---

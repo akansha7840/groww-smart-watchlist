@@ -40,9 +40,18 @@ export default function BriefingCard({
     sector_summary
   } = diffSummary;
 
-  const formattedTime = new Date(last_seen_at).toLocaleTimeString([], {
+  const parseUtcDate = (val) => {
+    if (!val) return new Date();
+    if (typeof val === 'string' && !val.endsWith('Z') && !val.includes('+')) {
+      return new Date(`${val}Z`);
+    }
+    return new Date(val);
+  };
+
+  const formattedTime = parseUtcDate(last_seen_at).toLocaleTimeString([], {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   });
 
   const formattedElapsed = 
